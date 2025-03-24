@@ -1,7 +1,3 @@
-import keyboard        # pip install keyboard
-import tkinter as tk
-from threading import Thread
-import time
 
 # Define the mapping dictionaries for Bengali characters
 
@@ -661,7 +657,6 @@ def transliterate(input_text):
     return ''.join(output)  # Combine the list of characters into a string and return it
 
 # Example usage: Continuous testing of the transliteration function
-'''
 if __name__ == "__main__":
     # This block runs only when the script is executed directly, not when imported.
     print("Bengali IME Transliteration Tool")
@@ -680,79 +675,3 @@ if __name__ == "__main__":
 
         # Print the transliterated output
         print("Output:", result)
-'''
-
-bengali_mode = False
-preedit_buffer = ""
-
-def toggle_mode():
-    global bengali_mode, preedit_buffer
-    bengali_mode = not bengali_mode
-    preedit_buffer = ""  # clear buffer when mode is toggled
-    print("Bengali mode:", bengali_mode)
-
-def update_preedit():
-    """
-    Continuously update the tkinter window with the current pre-edit text.
-    """
-    while True:
-        # Compute the transliterated version of the current buffer
-        current_preedit = transliterate(preedit_buffer)
-        # Update the label text
-        preedit_label.config(text=current_preedit)
-        # Use a small sleep to avoid hogging the CPU
-        time.sleep(0.1)
-
-def on_key_event(event):
-    """
-    Global keyboard event handler.
-    """
-    global preedit_buffer, bengali_mode
-    # Process only key down events
-    if event.event_type != "down":
-        return
-
-    # Toggle Bengali mode with F12
-    if event.name == "f12":
-        toggle_mode()
-        return
-
-    if not bengali_mode:
-        return  # In non-Bengali mode, don't capture keys
-
-    # Handle backspace: remove last character from the buffer
-    if event.name == "backspace":
-        preedit_buffer = preedit_buffer[:-1]
-    # Handle space: commit the preedit buffer
-    elif event.name == "space":
-        # For demonstration, print the committed text
-        committed_text = transliterate(preedit_buffer)
-        print("Committed text:", committed_text)
-        # Here, you would ideally remove the preedit text from the active window
-        preedit_buffer = ""
-    # For typical character keys, add the character to the buffer.
-    # (This is a simplified check; you may need to handle shift, punctuation, etc.)
-    elif len(event.name) == 1:
-        preedit_buffer += event.name
-
-def main():
-    global preedit_label, root
-
-    # Create a simple tkinter window to display the pre-edit text
-    root = tk.Tk()
-    root.title("Preedit Display")
-    preedit_label = tk.Label(root, text="", font=("Helvetica", 24))
-    preedit_label.pack(padx=10, pady=10)
-
-    # Start the keyboard hook (runs in a separate thread by default)
-    keyboard.hook(on_key_event)
-
-    # Start a background thread to update the pre-edit window continuously
-    updater_thread = Thread(target=update_preedit, daemon=True)
-    updater_thread.start()
-
-    # Start the tkinter event loop
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
