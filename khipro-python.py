@@ -286,22 +286,16 @@ def type_stream(text: str) -> Generator[str, None, None]:
 # Demo
 # --------------------------
 if __name__ == "__main__":
-    samples = [
-        "porikkha",        # পরিক্ষা
-        "kkh",             # ক্ষ
-        "ggg",             # গ্গ
-        "ngkr",            # ঙ্ক্র
-        "kar",             # কার (k + a-কার + r as phola -> ক + া + ্র)
-        "raf",             # রাফ (reph/r + a + f?)
-        "priyo",           # প্রিয়ো (approx based on mapping)
-        "ongko 123 .1",    # অংকো ১২৩ .১
-        "t...",            # ত...
-    ]
-    for s in samples:
-        print(s, "->", convert(s))
+    import sys
 
-    # Live typing example
-    s = "porikkha"
-    print("Live typing for:", s)
-    for step, out in enumerate(type_stream(s), 1):
-        print(f"{s[:step]!r} -> {out}")
+    print("🔡 Banglish to Bengali Typing Preview (Press Enter to quit)\n")
+
+    while True:
+        user_input = input("Type in Banglish: ").strip()
+        if not user_input:
+            break
+
+        print("\nLive Typing:")
+        for step, out in enumerate(type_stream(user_input), 1):
+            print(f"{user_input[:step]!r} → {out}")
+        print("-" * 40)
