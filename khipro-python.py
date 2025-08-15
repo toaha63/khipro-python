@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple, Generator
 # --------------------------
 
 SHOR: Dict[str, str] = {
-    "o": "অ",
+    "o": "অ", "oo": "ঽ",
     "fuf": "‌ু", "fuuf": "‌ূ", "fqf": "‌ৃ",
     "fa": "া", "a": "আ",
     "fi": "ি", "i": "ই",
@@ -36,6 +36,7 @@ BYANJON: Dict[str, str] = {
     "p": "প", "ph": "ফ", "b": "ব", "v": "ভ", "m": "ম",
     "z": "য", "l": "ল", "sh": "শ", "sf": "ষ", "s": "স", "h": "হ",
     "y": "য়", "rf": "ড়", "rff": "ঢ়",
+    ",,": "়",
 }
 
 JUKTOBORNO: Dict[str, str] = {
@@ -127,7 +128,7 @@ DIACRITIC: Dict[str, str] = {
 }
 
 BIRAM: Dict[str, str] = {
-    ".": "।", "...": "...", "..": ".", "$": "৳",
+    ".": "।", "...": "...", "..": ".", "$": "৳", ",,,": ",,", ".f": "॥", ".ff": "৺",
 }
 
 PRITHAYOK: Dict[str, str] = {
