@@ -290,7 +290,7 @@ def type_stream(text: str) -> Generator[str, None, None]:
 if __name__ == "__main__":
     import sys
 
-    print("🔡 Banglish to Bengali Typing Preview (Press Enter to quit)\n")
+    print("🔡 Khipro Typing Preview (Press Enter to quit)\n")
 
     while True:
         user_input = input("Type in Banglish: ").strip()
