@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
 from typing import Dict, List, Tuple, Generator
+import sys
+import os
+
+# Platform detection and platform-specific imports
+if os.name == 'posix':  # Linux/Unix
+    import tty
+    import termios
+elif os.name == 'nt':   # WindowsNT
+    import msvcrt
+else:
+    print("Unsupported operating system")
+    sys.exit(1)
 
 # --------------------------
-# Mapping groups (exactly as provided)
+# Mapping groups.
 # --------------------------
 
 SHOR: Dict[str, str] = {
@@ -285,19 +297,69 @@ def type_stream(text: str) -> Generator[str, None, None]:
 
 
 # --------------------------
-# Demo
+# Platform-specific getch function
+# --------------------------
+def getch():
+    """Read a single character from stdin without echoing it."""
+    if os.name == 'posix':  # Linux/Unix
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+    elif os.name == 'nt':   # WindowsNT
+        return msvcrt.getch().decode('utf-8', errors='ignore')
+    else:
+        # Fallback for other platforms
+        return sys.stdin.read(1)
+
+
+# --------------------------
+# Main execution
 # --------------------------
 if __name__ == "__main__":
-    import sys
+    print("🔡 Khipro Real-time Typing (Press 'Ctrl+C' to quit)\n")
+    print("Type below: ")
 
-    print("🔡 Khipro Typing Preview (Press Enter to quit)\n")
-
-    while True:
-        user_input = input("Type in Banglish: ").strip()
-        if not user_input:
-            break
-
-        print("\nLive Typing:")
-        for step, out in enumerate(type_stream(user_input), 1):
-            print(f"{user_input[:step]!r} → {out}")
-        print("-" * 40)
+    current_input = ""
+    
+    try:
+        while True:
+            # Get one character
+            char = getch()
+            
+            # Handle Enter key to clear or quit (optional)
+            if char == '\r':
+                print("\n" + "-"*40)
+                current_input = ""
+                continue
+            # Handle Backspace (ASCII 127 on Linux, \b on Windows)
+            elif (os.name == 'posix' and ord(char) == 127) or (os.name == 'nt' and char == '\b'):
+                if len(current_input) > 0:
+                    current_input = current_input[:-1]
+                    # Clear the current line and re-print everything
+                    sys.stdout.write('\r\033[K')  # \r carriage return, \033[K erase to end of line
+                    sys.stdout.write(f"Input: {current_input.ljust(20)} → Output: {convert(current_input)}")
+                    sys.stdout.flush()
+                continue
+            # Handle Ctrl+C to exit gracefully
+            elif char == '\x03':
+                break
+            
+            # Add the new character to the current input string
+            current_input += char
+            
+            # Convert the entire input so far
+            output_text = convert(current_input)
+            
+            # Print on the same line, overwriting the previous output
+            # \r moves the cursor to the start of the line, \033[K clears from cursor to end of line
+            sys.stdout.write('\r\033[K')
+            sys.stdout.write(f"Input: {current_input.ljust(20)} → Output: {output_text}")
+            sys.stdout.flush()
+            
+    except KeyboardInterrupt:
+        print("\n\nExiting... Goodbye from Khipro!")
